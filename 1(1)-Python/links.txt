@@ -12,6 +12,6 @@
 3080 https://www.acmicpc.net/source/96178290
 5670 https://www.acmicpc.net/source/96178348
 
-2243 https://www.acmicpc.net/source/96179232
-3653 https://www.acmicpc.net/source/96179238
-17408 https://www.acmicpc.net/source/96179250
+2243 https://www.acmicpc.net/source/96181089
+3653 https://www.acmicpc.net/source/96181100
+17408 https://www.acmicpc.net/source/96181111
