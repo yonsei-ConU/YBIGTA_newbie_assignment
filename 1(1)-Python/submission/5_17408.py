@@ -16,7 +16,7 @@ U = TypeVar("U")
 
 class SegmentTree(Generic[T, U]):
     """ConU's non-recursive uniform segment tree implementation"""
-    def __init__(self, arr: List[T], func: U, identity: T) -> None:
+    def __init__(self, arr: List[T], func: Callable, identity: T) -> None:
         i = 1
         while i < len(arr): i <<= 1
         self.n = i
@@ -102,7 +102,7 @@ def main() -> None:
     n = int(input_())
     arr = list(map(lambda x: Pair.f_conv(int(x)), input_().split()))
     m = int(input_())
-    st = SegmentTree(arr, Pair.f_merge, Pair.default())
+    st: SegmentTree = SegmentTree(arr, Pair.f_merge, Pair.default())
     for _ in range(m):
         a, b, c = map(int, input_().split())
         if a == 1:

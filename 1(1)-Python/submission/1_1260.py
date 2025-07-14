@@ -20,7 +20,7 @@ class Graph:
         n: 정점의 개수 (1번부터 n번까지)
         """
         self.n = n
-        self.g = [[] for _ in range(n)]
+        self.g: List[List[int]] = [[] for _ in range(n)]
 
     def add_edge(self, u: int, v: int) -> None:
         """

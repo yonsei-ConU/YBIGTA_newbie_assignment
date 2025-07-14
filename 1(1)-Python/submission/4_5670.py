@@ -96,7 +96,7 @@ def count(trie: Trie, query_seq: str) -> int:
 
     returns: query_seq의 단어를 입력하기 위해 버튼을 눌러야 하는 횟수
     """
-    pass
+    return 0
 
 
 def main() -> None:
@@ -107,8 +107,8 @@ def main() -> None:
         except:
             break
 
-        trie = Trie()
-        words = [input_() for _ in range(N)]
+        trie: Trie = Trie()
+        words: list[str] = [input_() for _ in range(N)]
         for w in words:
             trie.push(w)
         print(f"{trie.dfs(0) / N:.2f}")
