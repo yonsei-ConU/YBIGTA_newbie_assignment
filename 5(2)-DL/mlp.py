@@ -63,24 +63,21 @@ class MultiLayerPerceptron(object):
         """
         W1, b1, W2, b2, W3, b3, W4, b4 = self.model['W1'], self.model['b1'], self.model['W2'], self.model['b2'], self.model['W3'], self.model['b3'], self.model['W4'], self.model['b4']
         
-        ### CODE HERE ###
-        # 행렬 연산 후 activation function 적용
-        # y_hat을 X.shape[0] 크기로 reshape해야한다.
-        h1 = #TODO
-        z1 = #TODO
+        # 그냥 ReLU보다 이거 쓸때 loss가 더 적다. 왜그럴까??
+        z1 = X.dot(W1) + b1
+        h1 = leakyrelu(z1)
 
-        h2 = #TODO
-        z2 = #TODO
+        z2 = h1.dot(W2) + b2
+        h2 = leakyrelu(z2)
 
-        h3 = #TODO
-        z3 = #TODO
+        z3 = h2.dot(W3) + b3
+        h3 = leakyrelu(z3)
 
-        h4 = #TODO
-        y_hat = #TODO
-        y_hat = #TODO
+        z4 = h3.dot(W4) + b4
+        h4 = z4
+        y_hat = sigmoid(z4)
+        y_hat = y_hat.reshape(X.shape[0],)
 
-        ############################
-        
         assert y_hat.shape==(X.shape[0],), f"y_hat.shape is {y_hat.shape}. Reshape y_hat to {(X.shape[0],)}"
         cache = {'h1': h1, 'z1': z1, 'h2': h2, 'z2': z2, 'h3': h3, 'z3': z3, 'h4': h4, 'y_hat': y_hat}
     
@@ -122,6 +119,20 @@ class MultiLayerPerceptron(object):
        
         ################
         ############################################################
+
+        dh3 = dz3 * (z3 > 0).astype(float) # relu
+        db3 = np.sum(dh3, axis=0) # add 
+        dW3 = z2.T @ dh3 + 2 * L2_norm * W3 # multiply
+        dz2 = dh3 @ W3.T # multiply
+
+        dh2 = dz2 * (z2 > 0).astype(float) # relu
+        db2 = np.sum(dh2, axis=0) # add 
+        dW2 = z1.T @ dh2 + 2 * L2_norm * W2 # multiply
+        dz1 = dh2 @ W2.T # multiply
+
+        dh1 = dz1 * (z1 > 0).astype(float) # relu
+        db1 = np.sum(dh1, axis=0) # add 
+        dW1 = X.T @ dh1 + 2 * L2_norm * W1 # multiply
         
         grads = dict()
         grads['dy_hat'] = dy_hat
@@ -189,19 +200,19 @@ class MultiLayerPerceptron(object):
             # Forward propagation 후에 loss 계산, 
             # Back propagation 수행 후에 gradient update
 
-            y_hat, cache = #TODO
-            loss = #TODO
-            grad = #TODO
+            y_hat, cache = self.forward_propagation(X_train)
+            loss = self.compute_loss(y_hat, y_train, L2_norm)
+            grad = self.back_propagation(cache, X_train, y_train, L2_norm)
 
             # Gradient update
-            self.model['W1'] -= #TODO
-            self.model['b1'] -= #TODO
-            self.model['W2'] -= #TODO
-            self.model['b2'] -= #TODO
-            self.model['W3'] -= #TODO
-            self.model['b3'] -= #TODO
-            self.model['W4'] -= #TODO
-            self.model['b4'] -= #TODO
+            self.model['W1'] -= learning_rate * grad['dW1']
+            self.model['b1'] -= learning_rate * grad['db1']
+            self.model['W2'] -= learning_rate * grad['dW2']
+            self.model['b2'] -= learning_rate * grad['db2']
+            self.model['W3'] -= learning_rate * grad['dW3']
+            self.model['b3'] -= learning_rate * grad['db3']
+            self.model['W4'] -= learning_rate * grad['dW4']
+            self.model['b4'] -= learning_rate * grad['db4']
 
             ################# 
             if (it+1) % 1000 == 0:
@@ -236,7 +247,7 @@ class MultiLayerPerceptron(object):
         # Binary classification이므로 0.5 이상이면 1, 아니면 0으로 예측
         
         ##################
-        return predictions
+        return (self.forward_propagation(X)[0] >= 0.5).astype(int)
     
       
 
@@ -247,17 +258,11 @@ def tanh(x):
 
 
 def relu(x):
-    ### CODE HERE ###
-    
-    ############################
-    return x
+    return np.maximum(0, x)
 
 
 def leakyrelu(x):
-    ### CODE HERE ###
-    
-    ############################
-    return x 
+    return np.maximum(0.01 * x, x)
 
 
 def sigmoid(x):
