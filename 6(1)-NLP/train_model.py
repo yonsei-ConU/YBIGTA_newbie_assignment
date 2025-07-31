@@ -36,30 +36,55 @@ if __name__ == "__main__":
 
     # train
     for epoch in tqdm(range(num_epochs)):
-        loss_sum = 0
-        for data in train_loader:
+        model.train()
+        loss_sum = 0.0
+
+        for batch in train_loader:
             optimizer.zero_grad()
-            input_ids = tokenizer(data["verse_text"], padding=True, return_tensors="pt")\
-                .input_ids.to(device)
-            labels = data["label"].to(device)
-            logits = model(input_ids)
+
+            input_ids = tokenizer(
+                batch["verse_text"],
+                padding=True,
+                truncation=True,
+                return_tensors="pt"
+            ).input_ids.to(device)
+
+            labels = torch.tensor(batch["label"], dtype=torch.long, device=device)
+
+            logits = model(input_ids)         # (B, L, num_classes)
+
+            # ▲ 1) 마지막 토큰 hidden state만 사용 → (B, num_classes)
+            if logits.dim() == 3:             # 안전하게 확인
+                logits = logits[:, -1, :]
+
             loss = criterion(logits, labels)
             loss.backward()
             optimizer.step()
             loss_sum += loss.item()
 
-        preds = []
-        labels = []
+        # ─────────────────────────────────────────────────────────────
+        # Validation
+        model.eval()
+        preds, targets = [], []
         with torch.no_grad():
-            for data in validation_loader:
-                input_ids = tokenizer(data["verse_text"], padding=True, return_tensors="pt")\
-                    .input_ids.to(device)
-                logits = model(input_ids)
-                labels += data["label"].tolist()
-                preds += logits.argmax(-1).cpu().tolist()
+            for batch in validation_loader:
+                input_ids = tokenizer(
+                    batch["verse_text"],
+                    padding=True,
+                    truncation=True,
+                    return_tensors="pt"
+                ).input_ids.to(device)
 
-        macro = f1_score(labels, preds, average='macro')
-        micro = f1_score(labels, preds, average='micro')
+                logits = model(input_ids)     # (B, L, C) → (B, C)
+                if logits.dim() == 3:
+                    logits = logits[:, -1, :]
+
+                preds  += logits.argmax(-1).cpu().tolist()
+                targets += batch["label"].tolist()
+        # ─────────────────────────────────────────────────────────────
+
+        macro = f1_score(targets, preds, average='macro')
+        micro = f1_score(targets, preds, average='micro')
         print(f"loss: {loss_sum/len(train_loader):.6f} | macro: {macro:.6f} | micro: {micro:.6f}")
 
     # save model checkpoint
