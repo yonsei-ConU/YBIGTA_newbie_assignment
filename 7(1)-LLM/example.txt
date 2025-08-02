@@ -1,9 +1,9 @@
-====== ACCURACY: 0.3 ======
+====== ACCURACY: 0.2 ======
 
 [Details]
 Question 1: Janet’s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?
 Correct Answer: 18.0
-Predicted Answer: 24.0
+Predicted Answer: 32.0
 Correct: False
 
 Question 2: A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?
@@ -48,6 +48,6 @@ Correct: False
 
 Question 10: Eliza's rate per hour for the first 40 hours she works each week is $10. She also receives an overtime pay of 1.2 times her regular hourly rate. If Eliza worked for 45 hours this week, how much are her earnings for this week?
 Correct Answer: 460.0
-Predicted Answer: 460.0
-Correct: True
+Predicted Answer: 480.0
+Correct: False
 
